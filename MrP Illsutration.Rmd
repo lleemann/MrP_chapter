@@ -1,8 +1,12 @@
 ---
 title: "MrP Illustration"
-author: "Lucas Leemann and Fabio Wasserfallen -- Illustrative Example, Book Chapter for the Sage Handbook of Research Methods in Political Science and International Relations"
+author: Lucas Leemann and Fabio Wasserfallen -- Illustrative Example, Book Chapter
+  for the Sage Handbook of Research Methods in Political Science and International
+  Relations
 date: "10/5/2018"
-output: html_document
+output:
+  html_document: default
+  pdf_document: default
 ---
 
 ```{r setup, include=FALSE}
@@ -23,6 +27,7 @@ setwd("/Users/lleemann/Dropbox/Democratic Deficit exchange folder/Book chapter/D
 library(foreign)
 library(lme4)
 library(arm)
+library(extrafont)
 data1 <- read.dta("Minaret.dta")
 ```
 
@@ -46,7 +51,8 @@ Let's say that we want to use the survey data to estimate the support for the mi
 #### First Step: Estimate Response Model
 We estimate a hierarchical model in which we include a random effect that varies over cantons. On the individual level, we only include the variables *female*, *agegroup*, and *educ*. Rather than including dummies, we include them through random effects that vary over the groups in these variables:
 ```{r}
-model1 <- glmer(minaret ~ 1 + (1|female) + (1|agegroup) + (1|educ) + (1|canton), data= data2, family=binomial("probit"))
+model1 <- glmer(minaret ~ 1 + (1|female) + (1|agegroup) + (1|educ) + (1|canton),
+                data= data2, family=binomial("probit"))
 summary(model1)
 ```
 
@@ -122,10 +128,14 @@ for (i in 1:26){
   mrp.minaret1[i] <-  sum(p1*a)/sum(a)
 }
 
-MINARET <- c(51.80,60.80,61.20,63.80,66.30,62.40,62.80,68.80,56.70,55.90,64.00,48.40,59.90,63.50,63.70,71.40,65.90,58.60,64.00,67.70,68.30,46.90,58.00,49.30,40.30,51.20)/100
+MINARET <- c(51.80,60.80,61.20,63.80,66.30,62.40,62.80,68.80,56.70,55.90,64.00,48.40,
+             59.90,63.50,63.70,71.40,65.90,58.60,64.00,67.70,68.30,46.90,58.00,49.30,
+             40.30,51.20)/100
+
 
 plot(mrp.minaret1, MINARET, pch=21, cex=1.5, col=rgb(0,0,255,150,maxColorValue=255),
-     bty="n", ylab="Official Ballot Result", xlab="Estimated Cantonal Support", ylim=c(.4,.72), xlim=c(.4,.72))
+     bty="n", ylab="Official Ballot Result", xlab="Estimated Cantonal Support", 
+     ylim=c(.4,.72), xlim=c(.4,.72))
 abline(c(0,1), lty=2, lwd=.5)
 ```
 
@@ -137,15 +147,18 @@ We see immediately that we have estimates that do not vary sufficiently. We unde
 As mentioned above, we will often want to include context-level variables and this part illustrates how we can do so. One variable we can use here is a vote that took place a year prior to this vote. It was aimed at over-turning a decision of the courts regarding naturalization decisions and very popular among the right. 
 
 ```{r}
-rightP <- c(39.30,36.70,44.30,46.50, 59.90,47.10,49.10,48.90,44.30,27.00,41.40,28.50,35.20,42.80,42.60,48.30,48.30,
-            34.90,46.80, 48.90,42.20,19.00,25.00,18.00,17.90,19.80)/100
+rightP <- c(39.30,36.70,44.30,46.50,59.90,47.10,49.10,48.90,44.30,
+            27.00,41.40,28.50,35.20,42.80,42.60,48.30,48.30,34.90,
+            46.80,48.90,42.20,19.00,25.00,18.00,17.90,19.80)/100
 # source: https://www.bk.admin.ch/ch/d/pore/va/20080601/can532.html
 canton <- c(1:26)
 data3 <- cbind(rightP,canton)
 data4 <- merge(data2,data3,by="canton")
 
 #### MRP
-model2 <- glmer(minaret ~ rightP + (1|female) + (1|agegroup) + (1|educ) + (1|canton), data= data4, family=binomial("probit"))
+model2 <- glmer(minaret ~ rightP + (1|female) + (1|agegroup) + (1|educ) + (1|canton), 
+                
+                data= data4, family=binomial("probit"))
 summary(model2)
 ```
 
@@ -189,10 +202,12 @@ for (i in 1:26){
   mrp.minaret2[i] <-  sum(p2*a)/sum(a)
 }
 
-
+#par(family="CMU Serif")
 plot(mrp.minaret2, MINARET, pch=20, cex=3, col=rgb(0,0,255,150,maxColorValue=255),
-     bty="n", ylab="Official Ballot Result", xlab="Estimated Cantonal Support", ylim=c(.4,.72), xlim=c(.4,.72))
-points(mrp.minaret1,MINARET, col="blue", pch=21, cex=1.5,bg=rgb(255,255,255,100,maxColorValue = 255))
+     bty="n", ylab="Official Ballot Result", xlab="Estimated Cantonal Support", 
+     ylim=c(.4,.72), xlim=c(.4,.72))
+points(mrp.minaret1,MINARET, col="blue", pch=21, cex=1.5,
+       bg=rgb(255,255,255,100,maxColorValue = 255))
 abline(c(0,1), lty=2, lwd=.5)
 ```
 
@@ -202,14 +217,17 @@ This now looks much better. Although the national estimate did not improve, the 
 TAB <- table(attributes(model2)$frame$canton,attributes(model2)$frame$minaret)
 dis.minaret <- TAB[,2]/rowSums(TAB)
 
+#par(family="CMU Serif")
 plot(mrp.minaret2, MINARET, pch=20, cex=3, col=rgb(0,0,255,150,maxColorValue=255),
-     bty="n", ylab="Official Ballot Result", xlab="Estimated Cantonal Support", ylim=c(.4,.72), xlim=c(.4,.72))
-points(dis.minaret,MINARET, pch=18, col=rgb(0,0,255,60,maxColorValue = 255), cex=1.5)
+     bty="n", ylab="Official Ballot Result", xlab="Estimated Cantonal Support",
+     ylim=c(.4,.72), xlim=c(.4,.72))
+points(dis.minaret,MINARET, pch=18, col=rgb(0,0,255,60,maxColorValue = 255),
+       cex=1.5)
 points(mrp.minaret1,MINARET, col="blue", pch=21, cex=1.5,bg=rgb(255,255,255,100,maxColorValue = 255))
 abline(c(0,1), lty=2, lwd=.5)
 legend(.63,.5,legend = c("Disaggregation","MrP w/o L2", "MrP w/ L2"), pch=c(18,21,20), 
        col=c(rgb(0,0,255,60,maxColorValue = 255),"blue",
-             rgb(0,0,255,200,maxColorValue = 255)), bty="n", pt.cex=c(1.5,1.5,3))
+             rgb(0,0,255,200,maxColorValue = 255)), bty="n", pt.cex=c(1,1,2), cex=0.8)
 text(.7,.7,"45 Degree Line", cex=0.8)
 ```
 
@@ -267,10 +285,11 @@ for (i in 1:26){
 
 size.canton <- table(data2$canton)
 
-
+par(family="CMU Serif")
 plot(mrp.minaret2, MINARET, pch=20, cex=2,
      col=rgb(0,0,255,150,maxColorValue=255),
-     bty="n", ylab="Official Ballot Result", xlab="Estimated Cantonal Support", ylim=c(.4,.72), xlim=c(.4,.72))
+     bty="n", ylab="Official Ballot Result", xlab="Estimated Cantonal Support",
+     ylim=c(.4,.72), xlim=c(.4,.72))
   for (i in 1:26){
     draws <- mrp.minaret2.unc[i,]
     CI <- quantile(draws,c(0.025,0.975))
