@@ -286,14 +286,28 @@ for (i in 1:26){
 size.canton <- table(data2$canton)
 
 par(family="CMU Serif")
-plot(mrp.minaret2, MINARET, pch=20, cex=2,
-     col=rgb(0,0,255,150,maxColorValue=255),
-     bty="n", ylab="Official Ballot Result", xlab="Estimated Cantonal Support",
-     ylim=c(.4,.72), xlim=c(.4,.72))
-  for (i in 1:26){
-    draws <- mrp.minaret2.unc[i,]
-    CI <- quantile(draws,c(0.025,0.975))
-    segments(CI[1],MINARET[i],CI[2],MINARET[i], col="blue", lwd=0.5)
-  }
-abline(c(0,1), lty=2, lwd=.5)
+
+
+par(mfrow=c(1,1))
+orderL <- order(MINARET)
+
+plot(seq(.31,.8,length.out=26),1:26, bty="n", pch=20, yaxt="n",
+     xlab="Support for Initiative", ylab="", col="white")
+
+for (i in 1:26){
+  points(mrp.minaret2[orderL][i],i, col="blue", pch=19, cex=2)
+  if(i!=6&i!=24) points(MINARET[orderL][i],i, col="blue", pch=4, cex=2)
+  if(i==6|i==24)  points(MINARET[orderL][i],i, col="red", pch=4, cex=2)
+}
+
+for (i in 1:26){
+  draws <- mrp.minaret2.unc[orderL[i],]
+  CI <- quantile(draws,c(0.025,0.975))
+  segments(CI[1],i,CI[2],i, col="blue", lwd=0.5)
+}
+
+legend(.32,26,c("MrP Estimate", "Official Outcome (within CI)","Official Outcome (outside CI)"), 
+       pch=c(19,4,4), col=c("blue","blue","red"), bty="n")
+
+
 ```
