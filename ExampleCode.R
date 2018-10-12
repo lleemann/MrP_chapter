@@ -276,3 +276,29 @@ for (i in 1:26){
 }
 
 
+
+par(mfrow=c(1,1))
+orderL <- order(MINARET)
+
+plot(seq(.31,.8,length.out=26),1:26, bty="n", pch=26, yaxt="n",
+     xlab="Support for Initiative", ylab="")
+
+for (i in 1:26){
+  points(mrp.minaret2[orderL][i],i, col="blue", pch=19, cex=2)
+  if(i!=6&i!=24) points(MINARET[orderL][i],i, col="blue", pch=4, cex=2)
+  if(i==6|i==24)  points(MINARET[orderL][i],i, col="red", pch=4, cex=2)
+}
+
+for (i in 1:26){
+  draws <- mrp.minaret2.unc[orderL[i],]
+  CI <- quantile(draws,c(0.025,0.975))
+  segments(CI[1],i,CI[2],i, col="blue", lwd=0.5)
+}
+
+legend(.32,26,c("MrP Estimate", "Official Outcome (within CI)","Official Outcome (outside CI)"), 
+       pch=c(19,4,4), col=c("blue","blue","red"), bty="n")
+
+
+
+
+
