@@ -39,7 +39,8 @@ Censusobject
 
 
 #### MRP
-model1 <- glmer(minaret ~ 1 + (1|female) + (1|agegroup) + (1|educ) + (1|canton), data= data2, family=binomial("probit"))
+model1 <- glmer(minaret ~ 1 + (1|female) + (1|agegroup) + (1|educ) + 
+                  (1|canton), data= data2, family=binomial("probit"))
 summary(model1)
 
 re.female <- ranef(model1)$female[[1]]
@@ -164,7 +165,7 @@ for (i in 1:26){
   a2 <- a1 + 47
   p1 <- pnorm(y.lat1[a1:a2])
   a <- Censusobject[,i]
-  mrp.minaret1[i] <-  sum(p2*a)/sum(a)
+  mrp.minaret1[i] <-  sum(p1*a)/sum(a)
 }
 
 # Plot
